@@ -1,0 +1,127 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, Image, Text, ScrollView } from 'react-native';
+import { Button } from 'react-native-paper';
+import ImageCropPicker from 'react-native-image-crop-picker';
+
+const DocumentUpload = ({ label, onBrowse, onClear, image }) => {
+    return (
+        <View style={styles.uploadContainer}>
+            <Text style={styles.label}>{label}</Text>
+            {image && (
+                <Image source={{ uri: image.uri }} style={styles.imagePreview} />
+            )}
+            <View style={styles.buttonContainer}>
+                <Button mode="contained" onPress={onBrowse} style={styles.button}>
+                    Take Photo
+                </Button>
+                {image && (
+                    <Button mode="outlined" onPress={onClear} style={styles.clearButton}>
+                        Clear
+                    </Button>
+                )}
+            </View>
+        </View>
+    );
+};
+
+const DistributorInstallationForm = () => {
+    const [images, setImages] = useState({
+        vehicleImage: null,
+        vehicleRC: null,
+        vehicleDeviceImage: null,
+        customerAadhar: null,
+        customerPan: null,
+    });
+
+    const selectImage = async (key) => {
+        try {
+            const pickedImage = await ImageCropPicker.openCamera({
+                width: 300,
+                height: 400,
+                cropping: true,
+                includeBase64: true,
+            });
+            setImages((prevState) => ({
+                ...prevState,
+                [key]: { uri: `data:${pickedImage.mime};base64,${pickedImage.data}` },
+            }));
+        } catch (error) {
+            console.error('Error capturing image:', error);
+        }
+    };
+
+    const clearImage = (key) => {
+        setImages((prevState) => ({
+            ...prevState,
+            [key]: null,
+        }));
+    };
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <DocumentUpload
+                label="Vehicle Image"
+                onBrowse={() => selectImage('vehicleImage')}
+                onClear={() => clearImage('vehicleImage')}
+                image={images.vehicleImage}
+            />
+            <DocumentUpload
+                label="Vehicle RC"
+                onBrowse={() => selectImage('vehicleRC')}
+                onClear={() => clearImage('vehicleRC')}
+                image={images.vehicleRC}
+            />
+            <DocumentUpload
+                label="Vehicle Device Image"
+                onBrowse={() => selectImage('vehicleDeviceImage')}
+                onClear={() => clearImage('vehicleDeviceImage')}
+                image={images.vehicleDeviceImage}
+            />
+            <DocumentUpload
+                label="Customer Aadhar Card"
+                onBrowse={() => selectImage('customerAadhar')}
+                onClear={() => clearImage('customerAadhar')}
+                image={images.customerAadhar}
+            />
+            <DocumentUpload
+                label="Customer Pan Card"
+                onBrowse={() => selectImage('customerPan')}
+                onClear={() => clearImage('customerPan')}
+                image={images.customerPan}
+            />
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+    },
+    uploadContainer: {
+        marginBottom: 20,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        marginTop: 10,
+    },
+    button: {
+        marginRight: 10,
+    },
+    clearButton: {
+        marginLeft: 10,
+    },
+    imagePreview: {
+        width: 300,
+        height: 200,
+        marginTop: 10,
+        borderRadius: 10,
+        alignSelf: 'center',
+    },
+});
+
+export default DistributorInstallationForm;
