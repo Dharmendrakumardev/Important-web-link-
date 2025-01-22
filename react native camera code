@@ -1,0 +1,64 @@
+
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
+import ImageCropPicker from 'react-native-image-crop-picker';
+
+const DistributorInstallationForm = () => {
+    const [image, setImage] = useState(null);
+
+    const handleImageSelection = async () => {
+        try {
+            const pickedImage = await ImageCropPicker.openCamera({
+                width: 300,
+                height: 400,
+                cropping: true,
+                includeBase64: true,
+            });
+            setImage({ uri: `data:${pickedImage.mime};base64,${pickedImage.data}` });
+        } catch (error) {
+            console.error('Error capturing image:', error);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <Button mode="contained" onPress={handleImageSelection} style={styles.button}>
+                Open Camera
+            </Button>
+
+            {image && (
+                <View style={styles.previewContainer}>
+                    <Text style={styles.previewText}>Image Preview:</Text>
+                    <Image source={{ uri: image.uri }} style={styles.imagePreview} />
+                </View>
+            )}
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+    },
+    button: {
+        marginTop: 20,
+    },
+    previewContainer: {
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    previewText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    imagePreview: {
+        width: 300,
+        height: 400,
+        marginTop: 10,
+        borderRadius: 10,
+    },
+});
+
+export default DistributorInstallationForm;
